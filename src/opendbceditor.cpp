@@ -26,14 +26,15 @@ OpenDBCEditor::OpenDBCEditor(QWidget *parent) :
     SetupCleanModel();
 
     // Set min/max values
-    ui->doubleSpinBox_SignalFactor->setMinimum(DBL_MAX);
-    ui->doubleSpinBox_SignalFactor->setMinimum(DBL_MIN);
-    ui->doubleSpinBox_SignalMax->setMinimum(DBL_MAX);
-    ui->doubleSpinBox_SignalMax->setMinimum(DBL_MIN);
-    ui->doubleSpinBox_SignalMin->setMinimum(DBL_MAX);
-    ui->doubleSpinBox_SignalMin->setMinimum(DBL_MIN);
-    ui->doubleSpinBox_SignalOffset->setMinimum(DBL_MAX);
-    ui->doubleSpinBox_SignalOffset->setMinimum(DBL_MIN);
+    ui->doubleSpinBox_SignalFactor->setMaximum(DBL_MAX);
+    ui->doubleSpinBox_SignalFactor->setMinimum(-DBL_MAX);
+    ui->doubleSpinBox_SignalMax->setMaximum(DBL_MAX);
+    ui->doubleSpinBox_SignalMax->setMinimum(-DBL_MAX);
+    ui->doubleSpinBox_SignalMin->setMaximum(DBL_MAX);
+    ui->doubleSpinBox_SignalMin->setMinimum(-DBL_MAX);
+    ui->doubleSpinBox_SignalOffset->setMaximum(DBL_MAX);
+    ui->doubleSpinBox_SignalOffset->setMinimum(-DBL_MAX);
+
 
     ui->stackedWidget->setCurrentWidget(ui->page_Info);
 }
