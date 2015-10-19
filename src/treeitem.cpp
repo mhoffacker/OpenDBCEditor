@@ -277,29 +277,47 @@ bool TreeItem::setData(int column, const QVariant &value)
         }
         break;
     case TREE_ITEM_SIGNAL:
-        if ( column == 0 ) {
+        if ( column == 0 ) {            // Name
             delete ((signal_list_t*)m_itemData)->signal->name;
             ((signal_list_t*)m_itemData)->signal->name = copyFromQString(value.value<QString>());
-        } else if ( column == 1 ) {
+        } else if ( column == 1 ) {     // Startbit
             ((signal_list_t*)m_itemData)->signal->bit_start = value.value<qint8>();
-        } else if ( column == 2 ) {
+        } else if ( column == 2 ) {     // Length
             ((signal_list_t*)m_itemData)->signal->bit_len = value.value<quint8>();
-        } else if ( column == 3 ) {
-            ((signal_list_t*)m_itemData)->signal->signal_val_type = (signal_val_type_t)value.value<quint8>();
-        } else if ( column == 4 ) {
+        } else if ( column == 3 ) {     // Value type
+            quint8 t = (signal_val_type_t)value.value<quint8>();
+            switch (t) {
+            case 0:
+                ((signal_list_t*)m_itemData)->signal->signal_val_type = svt_integer;
+                ((signal_list_t*)m_itemData)->signal->signedness = 0; // unsigned
+                break;
+            case 1:
+                ((signal_list_t*)m_itemData)->signal->signal_val_type = svt_integer;
+                ((signal_list_t*)m_itemData)->signal->signedness = 1; // signed
+                break;
+            case 2:
+                ((signal_list_t*)m_itemData)->signal->signal_val_type = svt_float;
+                break;
+            case 3:
+                ((signal_list_t*)m_itemData)->signal->signal_val_type = svt_double;
+                break;
+            default:
+                ((signal_list_t*)m_itemData)->signal->signal_val_type = svt_integer;
+            }
+        } else if ( column == 4 ) {     // Endianess
             ((signal_list_t*)m_itemData)->signal->endianess = value.value<quint8>();
-        } else if ( column == 5 ) {
+        } else if ( column == 5 ) {     // Factor
             ((signal_list_t*)m_itemData)->signal->scale = value.value<double>();
-        } else if ( column == 6 ) {
+        } else if ( column == 6 ) {     // Offset
             ((signal_list_t*)m_itemData)->signal->offset = value.value<double>();
-        } else if ( column == 7 ) {
+        } else if ( column == 7 ) {     // Min value
             ((signal_list_t*)m_itemData)->signal->min = value.value<double>();
-        } else if ( column == 8 ) {
+        } else if ( column == 8 ) {     // Max value
             ((signal_list_t*)m_itemData)->signal->max = value.value<double>();
-        } else if ( column == 9 ) {
+        } else if ( column == 9 ) {     // Unit
             delete ((signal_list_t*)m_itemData)->signal->unit;
             ((signal_list_t*)m_itemData)->signal->unit = copyFromQString(value.value<QString>());
-        } else if ( column == 10 ) {
+        } else if ( column == 10 ) {    // Comment
             delete ((signal_list_t*)m_itemData)->signal->comment;
             ((signal_list_t*)m_itemData)->signal->comment = copyFromQString(value.value<QString>());
         } else {
@@ -331,7 +349,20 @@ QVariant TreeItem::data(int column) const
         if ( column == 0 ) return QString(((signal_list_t*)m_itemData)->signal->name);
         if ( column == 1 ) return ((signal_list_t*)m_itemData)->signal->bit_start;
         if ( column == 2 ) return ((signal_list_t*)m_itemData)->signal->bit_len;
-        if ( column == 3 ) return (quint8)((signal_list_t*)m_itemData)->signal->signal_val_type;
+        if ( column == 3 ) {
+            signal_val_type_t t = ((signal_list_t*)m_itemData)->signal->signal_val_type;
+            if ( t == svt_integer ) {
+                if ( ((signal_list_t*)m_itemData)->signal->signedness == 0 ) {
+                    return 0;   // Unsigned
+                } else {
+                    return 1;   // Signed
+                }
+            } else if ( t == svt_float ) {
+                return 2;
+            } else if ( t == svt_double ) {
+                return 3;
+            }
+        }
         if ( column == 4 ) return (quint8)((signal_list_t*)m_itemData)->signal->endianess;
         if ( column == 5 ) return ((signal_list_t*)m_itemData)->signal->scale;
         if ( column == 6 ) return ((signal_list_t*)m_itemData)->signal->offset;

@@ -477,6 +477,30 @@ static void message_attribute_list_write(FILE *out, message_list_t *message_list
   }
 }
 
+//////////////////////////////////////////////////////////////////////////////
+/// \brief signal_valtype_write
+/// \param out
+/// \param message_list
+/// Write out the signal value types
+/// Added by Michael Hoffacker, mhoffacker3@googlemail.com, Oct 19th 2015
+///
+static void signal_valtype_write(FILE *out, message_list_t *message_list)
+{
+    PLIST_ITER(message_list) {
+        const message_t *message = message_list->message;
+        signal_list_t *signal_list = message->signal_list;
+        PLIST_ITER(signal_list) {
+            const signal_t *signal = signal_list->signal;
+            if(signal->signal_val_type == svt_float ) {
+                fprintf(out, "SIG_VALTYPE_ %d %s : 1;", message->id, signal->name);
+            } else if(signal->signal_val_type == svt_double ) {
+                fprintf(out, "SIG_VALTYPE_ %d %s : 2;", message->id, signal->name);
+            }
+        }
+    }
+}
+
+
 static void signal_attribute_list_write(FILE *out, message_list_t *message_list)
 {
   PLIST_ITER(message_list) {
@@ -585,6 +609,14 @@ void dbc_write(FILE *out, dbc_t *dbc)
     message_transmitter_list_write(out, dbc->message_list);
     newline(out);
     newline(out);
+
+    // Message list added by Michael Hoffacker, mhoffacker3@googlemail.com, Oct 19th 2015
+    signal_valtype_write(out, dbc->message_list);
+    newline(out);
+    newline(out);
+    // End insertion
+
+
     comment_list_write(out, dbc);
     attribute_definition_list_write(out, dbc->attribute_definition_list);
     attribute_definition_default_list_write(out,
